@@ -26,3 +26,7 @@ itens.txt
 .vs/
 Thumbs.db
 .DS_Store
+
+# Doxygen
+Doxyfile
+diagrama_completo.puml

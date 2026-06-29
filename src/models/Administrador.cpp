@@ -1,10 +1,14 @@
 #include "../../include/models/Administrador.hpp"
+#include "../../include/exceptions/GincanaExceptions.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
 
 Administrador::Administrador(std::string id, std::string nome, std::string email, std::string senha, std::string nivelAcesso)
     : Usuario(id, nome, email, senha), nivelAcesso(nivelAcesso) {
+    if (nivelAcesso.empty()) {
+        throw EntradaInvalidaException("O nivel de acesso do administrador nao pode ser vazio.");
+    }
 }
 
 std::string Administrador::getNivelAcesso() const {

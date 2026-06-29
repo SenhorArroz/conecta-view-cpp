@@ -6,6 +6,9 @@
 
 ProvaGincana::ProvaGincana(std::string id, std::string titulo, std::string equipeId, std::string descricao)
     : AtividadePontuada(id, titulo, equipeId), descricao(descricao) {
+    if (descricao.empty()) {
+        throw EntradaInvalidaException("A descricao da prova nao pode ser vazia.");
+    }
     this->pontosObtidos = 0;
     this->avaliador = "Aguardando avaliacao";
 }

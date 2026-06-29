@@ -1,10 +1,18 @@
 #include "../../include/models/Item.hpp"
 #include "../../include/models/abstratos/Usuario.hpp"
+#include "../../include/exceptions/GincanaExceptions.hpp"
 #include <fstream>
 #include <string>
 
 Item::Item(std::string id, std::string nome, std::string descricao, int pontosBase, Usuario* criador)
-    : id(id), nome(nome), descricao(descricao), pontosBase(pontosBase), criador(criador) {}
+    : id(id), nome(nome), descricao(descricao), pontosBase(pontosBase), criador(criador) {
+    if (id.empty() || nome.empty()) {
+        throw EntradaInvalidaException("ID e nome do item nao podem ser vazios.");
+    }
+    if (pontosBase < 0) {
+        throw PontuacaoInvalidaException();
+    }
+}
 
 std::string Item::getId() const { return id; }
 

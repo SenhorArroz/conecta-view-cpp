@@ -1,0 +1,333 @@
+@startuml
+
+
+
+
+
+/' Objects '/
+
+class Administrador {
+	+Administrador(std::string id, std::string nome, std::string email, std::string senha, std::string nivelAcesso)
+	+~Administrador()
+	+podeAprovarDoacoes() : bool {query}
+	+getNivelAcesso() : std::string {query}
+	+getTipo() : std::string {query}
+	-nivelAcesso : std::string
+	+carregar(std::ifstream& arquivoEntrada) : void
+	+exibirMenu() : void {query}
+	+salvar(std::ofstream& arquivoSaida) : void {query}
+}
+
+
+class ArquivoException {
+	+ArquivoException(const std::string& detalhe)
+}
+
+
+abstract class AtividadePontuada {
+	+AtividadePontuada(std::string id, std::string titulo, std::string equipeId)
+	+~AtividadePontuada()
+	+{abstract} calcularPontos() : int {query}
+	#equipeId : std::string
+	+getEquipeId() : std::string {query}
+	+getId() : std::string {query}
+	+getTitulo() : std::string {query}
+	#id : std::string
+	#titulo : std::string
+	+{abstract} exibirResumo() : void {query}
+}
+
+
+class Doacao {
+	+Doacao(std::string id, std::string titulo, std::string equipeId, std::string nomeDoador, std::string descricao)
+	+~Doacao()
+	-status : StatusDoacao
+	+calcularPontos() : int {query}
+	+getStatus() : int {query}
+	+operator>>(std::istream& is, Doacao& doacao) : std :: istream&
+	+operator<<(std::ostream& os, const Doacao& doacao) : std :: ostream&
+	-descricao : std::string
+	-nomeDoador : std::string
+	-itensDoados : std::vector<ItemSendoDoado*>
+	+getItens() : std::vector<ItemSendoDoado*>& {query}
+	+adicionarItem(ItemSendoDoado* item) : void
+	+aprovar() : void
+	+carregar(std::ifstream& arquivoEntrada) : void
+	+exibirResumo() : void {query}
+	+rejeitar() : void
+	+salvar(std::ofstream& arquivoSaida) : void {query}
+}
+
+
+class EntidadeNaoEncontradaException {
+	+EntidadeNaoEncontradaException(const std::string& tipo, const std::string& id)
+}
+
+
+class EntradaInvalidaException {
+	+EntradaInvalidaException(const std::string& detalhe)
+}
+
+
+class Equipe {
+	+Equipe(std::string id, std::string nome, Usuario* criador)
+	+~Equipe()
+	-criador : Usuario*
+	+getCriador() : Usuario* {query}
+	+calcularPontuacaoTotal() : int {query}
+	+operator<<(std::ostream& os, const Equipe& equipe) : std :: ostream&
+	+getId() : std::string {query}
+	+getNome() : std::string {query}
+	-id : std::string
+	-nome : std::string
+	-atividades : std::vector<AtividadePontuada*>
+	+getAtividades() : std::vector<AtividadePontuada*>& {query}
+	+adicionarAtividade(AtividadePontuada* atividade) : void
+	+carregar(std::ifstream& arquivoEntrada) : void
+	+salvar(std::ofstream& arquivoSaida) : void {query}
+}
+
+
+class GincanaController {
+	+GincanaController()
+	+~GincanaController()
+	-buscarEquipePorId(const std::string& id) : Equipe* {query}
+	-buscarItemPorId(const std::string& id) : Item* {query}
+	-usuarioLogado : Usuario*
+	-equipes : std::vector<Equipe*>
+	-itensCadastrados : std::vector<Item*>
+	-usuarios : std::vector<Usuario*>
+	-aprovarDoacao() : void
+	-cadastrarEquipe() : void
+	-cadastrarItem() : void
+	-carregarDadosDeArquivo() : void
+	-exibirRankingGeral() : void
+	+iniciarSistema() : void
+	-lancarNotaProva() : void
+	-limparEntradaInvalida() : void
+	-listarEquipes() : void {query}
+	-listarItens() : void {query}
+	-menuAdministrador() : void
+	-registrarDoacao() : void
+	-salvarDadosEmArquivo() : void
+}
+
+
+class GincanaException {
+	+GincanaException(const std::string& msg)
+	+what() : char* {query}
+	#mensagem : std::string
+}
+
+
+abstract class IPersistente {
+	+~IPersistente()
+	+{abstract} carregar(std::ifstream& arquivoEntrada) : void
+	+{abstract} salvar(std::ofstream& arquivoSaida) : void {query}
+}
+
+
+class IdDuplicadoException {
+	+IdDuplicadoException(const std::string& tipo, const std::string& id)
+}
+
+
+class Item {
+	+Item(std::string id, std::string nome, std::string descricao, int pontosBase, Usuario* criador)
+	+~Item()
+	-criador : Usuario*
+	+getCriador() : Usuario* {query}
+	+getPontosBase() : int {query}
+	-pontosBase : int
+	-descricao : std::string
+	+getDescricao() : std::string {query}
+	+getId() : std::string {query}
+	+getNome() : std::string {query}
+	-id : std::string
+	-nome : std::string
+	+carregar(std::ifstream& arquivoEntrada) : void
+	+salvar(std::ofstream& arquivoSaida) : void {query}
+}
+
+
+class ItemSendoDoado {
+	+ItemSendoDoado(std::string id, Item* itemBase, int quantidade)
+	+~ItemSendoDoado()
+	+getItemBase() : Item* {query}
+	-itemBase : Item*
+	+calcularSubtotalPontos() : int {query}
+	+getQuantidade() : int {query}
+	-quantidade : int
+	+getId() : std::string {query}
+	-id : std::string
+}
+
+
+class MembroEquipe {
+	+MembroEquipe(std::string id, std::string nome, std::string email, std::string senha, std::string cargo, std::string equipeId)
+	+~MembroEquipe()
+	+isLider() : bool {query}
+	-cargoNaEquipe : std::string
+	-equipeId : std::string
+	+getCargoNaEquipe() : std::string {query}
+	+getEquipeId() : std::string {query}
+	+getTipo() : std::string {query}
+	+carregar(std::ifstream& arquivoEntrada) : void
+	+exibirMenu() : void {query}
+	+salvar(std::ofstream& arquivoSaida) : void {query}
+	+setCargoNaEquipe(const std::string& novoCargo) : void
+}
+
+
+class PontuacaoInvalidaException {
+	+PontuacaoInvalidaException()
+}
+
+
+class ProvaGincana {
+	+ProvaGincana(std::string id, std::string titulo, std::string equipeId, std::string descricao)
+	+~ProvaGincana()
+	+calcularPontos() : int {query}
+	+getPontosObtidos() : int {query}
+	-pontosObtidos : int
+	-avaliador : std::string
+	-descricao : std::string
+	+getAvaliador() : std::string {query}
+	+getDescricao() : std::string {query}
+	+avaliarApresentacao(int nota, const std::string& nomeAvaliador) : void
+	+carregar(std::ifstream& arquivoEntrada) : void
+	+exibirResumo() : void {query}
+	+salvar(std::ofstream& arquivoSaida) : void {query}
+}
+
+
+class RegraNegocioException {
+	+RegraNegocioException(const std::string& msg)
+}
+
+
+class TransicaoEstadoInvalidaException {
+	+TransicaoEstadoInvalidaException()
+}
+
+
+abstract class Usuario {
+	+Usuario(std::string id, std::string nome, std::string email, std::string senha)
+	+~Usuario()
+	+verificarSenha(const std::string& senhaDigitada) : bool {query}
+	-email : std::string
+	+getEmail() : std::string {query}
+	+getId() : std::string {query}
+	+getNome() : std::string {query}
+	+{abstract} getTipo() : std::string {query}
+	-id : std::string
+	-nome : std::string
+	-senha : std::string
+	+{abstract} exibirMenu() : void {query}
+}
+
+
+enum StatusDoacao {
+	APROVADA
+	PENDENTE_AVALIACAO
+	REJEITADA
+}
+
+
+
+
+
+/' Inheritance relationships '/
+
+AtividadePontuada <|-- Doacao
+
+
+AtividadePontuada <|-- ProvaGincana
+
+
+GincanaException <|-- ArquivoException
+
+
+GincanaException <|-- EntradaInvalidaException
+
+
+GincanaException <|-- RegraNegocioException
+
+
+IPersistente <|-- Administrador
+
+
+IPersistente <|-- Doacao
+
+
+IPersistente <|-- Equipe
+
+
+IPersistente <|-- Item
+
+
+IPersistente <|-- MembroEquipe
+
+
+IPersistente <|-- ProvaGincana
+
+
+RegraNegocioException <|-- EntidadeNaoEncontradaException
+
+
+RegraNegocioException <|-- IdDuplicadoException
+
+
+RegraNegocioException <|-- PontuacaoInvalidaException
+
+
+RegraNegocioException <|-- TransicaoEstadoInvalidaException
+
+
+Usuario <|-- Administrador
+
+
+Usuario <|-- MembroEquipe
+
+
+
+
+
+/' Aggregation relationships '/
+
+Doacao o-- ItemSendoDoado
+
+
+Doacao *-- StatusDoacao
+
+
+Equipe o-- AtividadePontuada
+
+
+Equipe o-- Usuario
+
+
+GincanaController o-- Equipe
+
+
+GincanaController o-- Item
+
+
+GincanaController "2" o-- Usuario
+
+
+Item o-- Usuario
+
+
+ItemSendoDoado o-- Item
+
+
+
+
+
+
+/' Nested objects '/
+
+
+
+@enduml

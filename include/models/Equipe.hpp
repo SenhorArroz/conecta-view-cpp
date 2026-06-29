@@ -27,6 +27,7 @@ public:
     Usuario* getCriador() const;
 
     void adicionarAtividade(AtividadePontuada* atividade);
+    const std::vector<AtividadePontuada*>& getAtividades() const;
     
     int calcularPontuacaoTotal() const;
 

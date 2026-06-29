@@ -1,0 +1,28 @@
+# Arquivos compilados
+*.exe
+*.o
+*.obj
+*.out
+
+# Diretórios de build e documentação gerada
+out/
+html/
+latex/
+
+# Arquivos de log e saída temporária
+*.log
+log_erro.txt
+compile_out.txt
+out.txt
+syntax_error.txt
+build.log
+
+# Bancos de dados de texto do sistema (gerados na execução)
+equipes.txt
+itens.txt
+
+# Arquivos de configuração de IDE e SO
+.vscode/
+.vs/
+Thumbs.db
+.DS_Store

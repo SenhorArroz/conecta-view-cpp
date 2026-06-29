@@ -1,7 +1,12 @@
 #include "../../include/models/abstratos/Usuario.hpp"
+#include "../../include/exceptions/GincanaExceptions.hpp"
 
 Usuario::Usuario(std::string id, std::string nome, std::string email, std::string senha)
-    : id(id), nome(nome), email(email), senha(senha) {}
+    : id(id), nome(nome), email(email), senha(senha) {
+    if (id.empty() || nome.empty() || email.empty() || senha.empty()) {
+        throw EntradaInvalidaException("Nenhum dos campos do usuario (id, nome, email, senha) pode ser vazio.");
+    }
+}
 
 Usuario::~Usuario() {}
 

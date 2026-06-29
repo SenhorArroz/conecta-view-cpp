@@ -7,7 +7,10 @@
 
 Doacao::Doacao(std::string id, std::string titulo, std::string equipeId, std::string nomeDoador, std::string descricao)
     : AtividadePontuada(id, titulo, equipeId), nomeDoador(nomeDoador), descricao(descricao) {
-    this->status = StatusDoacao::APROVADA; 
+    if (nomeDoador.empty()) {
+        throw EntradaInvalidaException("O nome do doador nao pode ser vazio.");
+    }
+    this->status = StatusDoacao::PENDENTE_AVALIACAO; 
 }
 
 Doacao::~Doacao() {
@@ -34,9 +37,13 @@ void Doacao::rejeitar() {
 StatusDoacao Doacao::getStatus() const { return status; }
 
 void Doacao::adicionarItem(ItemSendoDoado* item) {
-    if (item != nullptr) {
-        itensDoados.push_back(item);
+    if (item == nullptr) {
+        throw EntradaInvalidaException("Nao eh possivel adicionar um item nulo a doacao.");
     }
+    if (status == StatusDoacao::REJEITADA) {
+        throw TransicaoEstadoInvalidaException();
+    }
+    itensDoados.push_back(item);
 }
 
 int Doacao::calcularPontos() const {

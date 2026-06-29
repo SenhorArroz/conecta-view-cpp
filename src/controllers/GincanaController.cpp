@@ -126,7 +126,7 @@ void GincanaController::menuAdministrador() {
     }
 
     int opcao = 0;
-    while (opcao != 8) {
+    while (opcao != 9) {
         std::cout << "\n=== MENU DO ADMINISTRADOR ===\n";
         std::cout << "Bem-vindo, " << admin->getNome() << " | Nivel: " << admin->getNivelAcesso() << "\n";
         std::cout << "1. Cadastrar nova equipe\n";
@@ -136,7 +136,8 @@ void GincanaController::menuAdministrador() {
         std::cout << "5. Registrar doacao para uma equipe\n";
         std::cout << "6. Lancar nota de apresentacao\n";
         std::cout << "7. Exibir ranking geral\n";
-        std::cout << "8. Voltar ao menu principal\n";
+        std::cout << "8. Aprovar doacoes pendentes\n";
+        std::cout << "9. Voltar ao menu principal\n";
         std::cout << "=============================\n";
         std::cout << "Escolha: ";
 
@@ -155,7 +156,8 @@ void GincanaController::menuAdministrador() {
                 case 5: registrarDoacao(); break;
                 case 6: lancarNotaProva(); break;
                 case 7: exibirRankingGeral(); break;
-                case 8:
+                case 8: aprovarDoacao(); break;
+                case 9:
                     std::cout << ">> Voltando ao menu principal...\n";
                     break;
                 default:
@@ -344,8 +346,69 @@ void GincanaController::registrarDoacao() {
     }
 
     equipe->adicionarAtividade(novaDoacao);
-    std::cout << ">> Doacao '" << tituloDoacao << "' registrada e APROVADA com sucesso para a equipe '" << equipe->getNome() << "'!\n";
-    std::cout << ">> Pontos contabilizados: " << novaDoacao->calcularPontos() << " pts.\n";
+    std::cout << ">> Doacao '" << tituloDoacao << "' registrada e aguardando APROVACAO para a equipe '" << equipe->getNome() << "'!\n";
+    std::cout << ">> Pontos serao contabilizados apos aprovacao.\n";
+}
+
+// ========================== APROVAR DOACAO ==========================
+
+void GincanaController::aprovarDoacao() {
+    std::cout << "\n-- APROVAR DOACOES PENDENTES --\n";
+    
+    std::vector<Doacao*> doacoesPendentes;
+    
+    // Coleta todas as doacoes pendentes
+    for (Equipe* eq : equipes) {
+        for (AtividadePontuada* atv : eq->getAtividades()) {
+            Doacao* doacao = dynamic_cast<Doacao*>(atv);
+            if (doacao != nullptr && doacao->getStatus() == StatusDoacao::PENDENTE_AVALIACAO) {
+                doacoesPendentes.push_back(doacao);
+            }
+        }
+    }
+    
+    if (doacoesPendentes.empty()) {
+        std::cout << ">> Nao ha doacoes pendentes de aprovacao.\n";
+        return;
+    }
+    
+    for (size_t i = 0; i < doacoesPendentes.size(); ++i) {
+        std::cout << (i + 1) << ". " << *doacoesPendentes[i] << " (Equipe ID: " << doacoesPendentes[i]->getEquipeId() << ")\n";
+    }
+    
+    std::cout << "Digite o numero da doacao que deseja avaliar (ou 0 para cancelar): ";
+    int escolha;
+    if (!(std::cin >> escolha) || escolha < 0 || escolha > (int)doacoesPendentes.size()) {
+        limparEntradaInvalida();
+        std::cout << ">> Escolha invalida.\n";
+        return;
+    }
+    
+    if (escolha == 0) return;
+    
+    Doacao* selecionada = doacoesPendentes[escolha - 1];
+    
+    std::cout << "1. Aprovar\n2. Rejeitar\nEscolha: ";
+    int acao;
+    if (!(std::cin >> acao)) {
+        limparEntradaInvalida();
+        std::cout << ">> Acao invalida.\n";
+        return;
+    }
+    
+    try {
+        if (acao == 1) {
+            selecionada->aprovar();
+            std::cout << ">> Doacao aprovada com sucesso! Pontos contabilizados.\n";
+        } else if (acao == 2) {
+            selecionada->rejeitar();
+            std::cout << ">> Doacao rejeitada.\n";
+        } else {
+            std::cout << ">> Acao invalida.\n";
+        }
+    } catch (const GincanaException& e) {
+        std::cout << ">> Erro ao avaliar doacao: " << e.what() << "\n";
+    }
 }
 
 // ========================== PROVA / NOTA ==========================

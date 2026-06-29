@@ -24,6 +24,7 @@ private:
     void registrarDoacao();
     void lancarNotaProva();
     void exibirRankingGeral();
+    void aprovarDoacao();
 
     void salvarDadosEmArquivo();
     void carregarDadosDeArquivo();

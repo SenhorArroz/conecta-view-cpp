@@ -1,16 +1,24 @@
 #include "../../include/models/MembroEquipe.hpp"
+#include "../../include/exceptions/GincanaExceptions.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
 
 MembroEquipe::MembroEquipe(std::string id, std::string nome, std::string email, std::string senha, std::string cargo, std::string equipeId)
-    : Usuario(id, nome, email, senha), cargoNaEquipe(cargo), equipeId(equipeId) {}
+    : Usuario(id, nome, email, senha), cargoNaEquipe(cargo), equipeId(equipeId) {
+    if (cargo.empty() || equipeId.empty()) {
+        throw EntradaInvalidaException("Cargo e ID da equipe não podem ser vazios para um membro.");
+    }
+}
 
 std::string MembroEquipe::getCargoNaEquipe() const { return cargoNaEquipe; }
 
 std::string MembroEquipe::getEquipeId() const { return equipeId; }
 
 void MembroEquipe::setCargoNaEquipe(const std::string& novoCargo) {
+    if (novoCargo.empty()) {
+        throw EntradaInvalidaException("O cargo na equipe nao pode ser vazio.");
+    }
     cargoNaEquipe = novoCargo;
 }
 
